@@ -7,6 +7,7 @@ interface ChatInputProps {
 
 export const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
   const [input, setInput] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleSubmit = () => {
     const trimmed = input.trim();
@@ -24,24 +25,73 @@ export const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
   };
 
   return (
-    <div className="bg-white border-t border-gray-200 p-4">
-      <div className="max-w-4xl mx-auto flex items-end gap-3">
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="输入消息..."
-          disabled={disabled}
-          className="flex-1 px-4 py-3 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent text-gray-800 placeholder-gray-400"
-          rows={2}
-        />
-        <button
-          onClick={handleSubmit}
-          disabled={!input.trim() || disabled}
-          className="px-6 py-3 bg-gradient-to-r from-pink-400 to-pink-500 text-white rounded-xl font-medium hover:from-pink-500 hover:to-pink-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-pink-200"
-        >
-          发送
-        </button>
+    <div className="relative z-10 glass-effect border-t border-pink-100 px-4 py-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-end gap-3">
+          <div
+            className={`relative flex-1 rounded-3xl transition-all duration-300 ${
+              isFocused ? 'ring-2 ring-pink-400 shadow-lg shadow-pink-200/50' : 'shadow-md'
+            }`}
+          >
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              placeholder="输入消息..."
+              disabled={disabled}
+              className="w-full px-5 py-4 bg-white rounded-3xl resize-none focus:outline-none text-gray-800 placeholder-gray-400 border-2 border-transparent"
+              rows={1}
+              style={{ minHeight: '48px', maxHeight: '120px' }}
+            />
+            {!input && !disabled && (
+              <div className="absolute right-4 bottom-4 flex items-center gap-1 text-gray-400">
+                <span className="text-sm">按 Enter 发送</span>
+                <span className="text-xs px-1.5 py-0.5 bg-gray-100 rounded">↵</span>
+              </div>
+            )}
+          </div>
+          
+          <button
+            onClick={handleSubmit}
+            disabled={!input.trim() || disabled}
+            className={`relative px-6 py-4 rounded-3xl font-medium transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 ${
+              input.trim() && !disabled
+                ? 'bg-gradient-to-r from-pink-400 via-pink-500 to-purple-500 text-white shadow-xl shadow-pink-300/50'
+                : 'bg-gray-200 text-gray-400'
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              {disabled ? (
+                <span className="flex gap-1">
+                  <span className="w-2 h-2 bg-white/70 rounded-full typing-indicator" style={{ animationDelay: '0s' }} />
+                  <span className="w-2 h-2 bg-white/70 rounded-full typing-indicator" style={{ animationDelay: '0.2s' }} />
+                  <span className="w-2 h-2 bg-white/70 rounded-full typing-indicator" style={{ animationDelay: '0.4s' }} />
+                </span>
+              ) : (
+                <>
+                  <span className="text-lg">💌</span>
+                  <span>发送</span>
+                </>
+              )}
+            </span>
+            
+            {input.trim() && !disabled && (
+              <span className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-md">
+                <span className="text-xs">💕</span>
+              </span>
+            )}
+          </button>
+        </div>
+        
+        <div className="flex items-center justify-center gap-4 mt-3">
+          <span className="text-xs text-gray-400 flex items-center gap-1">
+            <span>🌸</span>
+            <span>温柔聊天中</span>
+            <span>🌸</span>
+          </span>
+        </div>
       </div>
     </div>
   );

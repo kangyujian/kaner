@@ -15,19 +15,31 @@ const personas: PersonaConfig[] = [
 
 export const PersonaSelector = ({ selectedPersona, onSelect }: PersonaSelectorProps) => {
   return (
-    <div className="flex gap-2 flex-wrap">
+    <div className="flex gap-3 flex-wrap">
       {personas.map((persona) => (
         <button
           key={persona.type}
           onClick={() => onSelect(persona.type)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+          className={`relative flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium transition-all duration-300 transform ${
             selectedPersona === persona.type
-              ? 'bg-gradient-to-r from-pink-400 to-pink-500 text-white shadow-lg shadow-pink-200'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              ? 'bg-gradient-to-r from-pink-400 via-pink-500 to-purple-500 text-white shadow-xl shadow-pink-300/50 scale-105'
+              : 'bg-white/80 text-gray-600 hover:bg-white hover:shadow-lg hover:scale-102 border border-pink-100'
           }`}
         >
-          <span className="text-lg">{persona.emoji}</span>
+          <span
+            className={`text-lg transition-transform duration-300 ${
+              selectedPersona === persona.type ? 'float-animation' : ''
+            }`}
+          >
+            {persona.emoji}
+          </span>
           <span>{persona.name}</span>
+          
+          {selectedPersona === persona.type && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center shadow-md">
+              <span className="text-xs text-pink-500">✓</span>
+            </span>
+          )}
         </button>
       ))}
     </div>
