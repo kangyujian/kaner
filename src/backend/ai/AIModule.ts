@@ -39,11 +39,24 @@ export class AIModule {
 
   /**
    * 构造函数
-   * @param configs 各模型的配置
+   * @param configs 各模型的配置（只包含已配置API Key的模型）
    */
-  constructor(configs: Record<AIModelType, AIModelConfig>) {
-    this.models = configs;
-    this.currentModel = 'qianwen'; // 默认使用千问
+  constructor(configs: Partial<Record<AIModelType, AIModelConfig>>) {
+    // 过滤掉没有配置API Key的模型
+    this.models = Object.keys(configs).reduce((acc, key) => {
+      const modelKey = key as AIModelType;
+      if (configs[modelKey]?.apiKey && configs[modelKey]?.apiKey.trim()) {
+        acc[modelKey] = configs[modelKey]!;
+      }
+      return acc;
+    }, {} as Record<AIModelType, AIModelConfig>);
+    
+    // 获取第一个可用模型作为默认模型
+    const availableModels = this.getAvailableModels();
+    if (availableModels.length === 0) {
+      throw new Error('未配置任何AI模型，请至少配置一个模型的API Key');
+    }
+    this.currentModel = availableModels[0];
     this.axiosInstance = axios.create({ timeout: 30000 });
   }
 

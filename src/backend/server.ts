@@ -34,8 +34,8 @@ const emotionModule = new EmotionModule();
 const sessionManager = new SessionManager(storageDir);
 const searchTool = new SearchTool();
 
-// AI模块配置
-const aiModule = new AIModule({
+// AI模块配置 - 只注册已配置API Key的模型
+const aiConfig: Record<string, { apiKey: string; baseURL: string; model: string }> = {
   qianwen: {
     apiKey: process.env.QIANWEN_API_KEY || '',
     baseURL: 'https://dashscope.aliyuncs.com/api/text/chat',
@@ -51,7 +51,17 @@ const aiModule = new AIModule({
     baseURL: 'https://api.moonshot.cn/v1/chat/completions',
     model: 'moonshot-v1-8k'
   }
-});
+};
+
+// 只传递有API Key的模型配置
+const aiModule = new AIModule(
+  Object.keys(aiConfig).reduce((acc, key) => {
+    if (aiConfig[key].apiKey && aiConfig[key].apiKey.trim()) {
+      acc[key as AIModelType] = aiConfig[key];
+    }
+    return acc;
+  }, {} as Partial<Record<AIModelType, { apiKey: string; baseURL: string; model: string }>>)
+);
 
 /**
  * 健康检查接口
