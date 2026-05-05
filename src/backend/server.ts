@@ -53,10 +53,17 @@ const aiConfig: Record<string, { apiKey: string; baseURL: string; model: string 
   }
 };
 
-// 只传递有API Key的模型配置
+// 判断API Key是否有效（不是占位符）
+const isValidApiKey = (apiKey: string): boolean => {
+  if (!apiKey || !apiKey.trim()) return false;
+  const placeholders = ['your_qianwen_api_key', 'your_deepseek_api_key', 'your_kimi_api_key', 'your_api_key'];
+  return !placeholders.includes(apiKey.trim());
+};
+
+// 只传递有有效API Key的模型配置
 const aiModule = new AIModule(
   Object.keys(aiConfig).reduce((acc, key) => {
-    if (aiConfig[key].apiKey && aiConfig[key].apiKey.trim()) {
+    if (isValidApiKey(aiConfig[key].apiKey)) {
       acc[key as AIModelType] = aiConfig[key];
     }
     return acc;
